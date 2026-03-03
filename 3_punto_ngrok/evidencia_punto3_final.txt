@@ -1,0 +1,54 @@
+﻿EVIDENCIA FINAL PUNTO 3 - NGROK + PAGINA PERSONALIZADA
+Dominio local del sitio: parcial.juan-camilo.com
+Fecha: 2026-03-03 17:55:57
+
+=== SITIOS HABILITADOS ===
+total 0
+lrwxrwxrwx 1 root root 31 Mar  3 20:14 parcial.conf -> ../sites-available/parcial.conf
+
+=== VERSION NGROK ===
+ngrok version 3.36.1
+
+=== URL PUBLICA ===
+https://rapaciously-slinkier-annabelle.ngrok-free.dev
+
+=== VERIFICACION REMOTA ===
+Probando URL publica: https://rapaciously-slinkier-annabelle.ngrok-free.dev
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0   332    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/2 200 
+
+accept-ranges: bytes
+
+content-type: text/html
+
+date: Tue, 03 Mar 2026 22:56:56 GMT
+
+etag: "14c-64c2692a119dd"
+
+last-modified: Tue, 03 Mar 2026 22:53:32 GMT
+
+ngrok-agent-ips: 191.111.253.149
+
+server: Apache/2.4.52 (Ubuntu)
+
+vary: Accept-Encoding
+
+content-length: 332
+
+
+
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pagina Personalizada Parcial</title>
+</head>
+<body>
+  <h1>Parcial Servicios Telematicos - Punto 3</h1>
+  <p>Esta es la pagina personalizada publicada por tunel ngrok.</p>

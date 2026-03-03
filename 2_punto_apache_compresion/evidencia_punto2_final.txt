@@ -1,0 +1,102 @@
+﻿EVIDENCIA FINAL PUNTO 2 - APACHE + MOD_DEFLATE + DNS
+Dominio usado: parcial.juan-camilo.com
+Fecha: 2026-03-03 17:55:11
+
+=== 1) DNS LOCAL DEL DOMINIO ===
+192.168.50.3
+
+=== 2) MODULOS APACHE ACTIVOS ===
+ deflate_module (shared)
+ headers_module (shared)
+
+=== 3) VHOST PARCIAL ===
+<VirtualHost *:80>
+    ServerName parcial.juan-camilo.com
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/parcial
+
+    <Directory /var/www/parcial>
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/parcial_error.log
+    CustomLog ${APACHE_LOG_DIR}/parcial_access.log combined
+</VirtualHost>
+
+=== 4) CONFIGURACION DE COMPRESION ===
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json application/xml text/xml image/svg+xml
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header append Vary Accept-Encoding
+</IfModule>
+
+# Exclude already compressed or binary-heavy formats.
+SetEnvIfNoCase Request_URI "\.(?:gif|jpe?g|png|webp|avif|mp4|avi|mkv|mov|zip|gz|bz2|7z|rar|pdf)$" no-gzip dont-vary
+
+=== 5) CABECERAS CON GZIP (texto) ===
+HTTP/1.1 200 OK
+
+[1mDate[0m: Tue, 03 Mar 2026 22:56:13 GMT
+
+[1mServer[0m: Apache/2.4.52 (Ubuntu)
+
+[1mLast-Modified[0m: Tue, 03 Mar 2026 22:53:24 GMT
+
+[1mETag[0m: "b5a40-64c269224a6cd-gzip"
+
+[1mAccept-Ranges[0m: bytes
+
+[1mVary[0m: Accept-Encoding
+
+[1mContent-Encoding[0m: gzip
+
+[1mContent-Length[0m: 2258
+
+[1mContent-Type[0m: text/plain
+
+
+
+
+=== 6) CABECERAS SIN GZIP (imagen excluida) ===
+HTTP/1.1 200 OK
+
+[1mDate[0m: Tue, 03 Mar 2026 22:56:17 GMT
+
+[1mServer[0m: Apache/2.4.52 (Ubuntu)
+
+[1mLast-Modified[0m: Tue, 03 Mar 2026 22:53:24 GMT
+
+[1mETag[0m: "a000-64c2692246855"
+
+[1mAccept-Ranges[0m: bytes
+
+[1mContent-Length[0m: 40960
+
+[1mVary[0m: Accept-Encoding
+
+[1mContent-Type[0m: image/png
+
+
+
+
+=== 7) COMPARACION DE TAMANO ===
+plain_bytes=744000
+gzip_bytes=2258
+
+=== 8) SNIFFER (TSHARK) ===
+Running as user "root" and group "root". This could be dangerous.
+
+200		29012
+200	gzip	2609
+
+=== 9) ARCHIVOS DEL SITIO ===
+total 784K
+-rw-r--r-- 1 root root  116 Mar  3 22:53 app.js
+-rw-r--r-- 1 root root  394 Mar  3 22:53 index.html
+-rw-r--r-- 1 root root  40K Mar  3 22:53 logo.png
+-rw-r--r-- 1 root root 727K Mar  3 22:53 lorem.txt
+-rw-r--r-- 1 root root  332 Mar  3 22:53 pagina_personalizada.html
+-rw-r--r-- 1 root root  228 Mar  3 22:53 styles.css

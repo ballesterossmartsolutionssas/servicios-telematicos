@@ -1,0 +1,212 @@
+﻿EVIDENCIA PUNTO 1 - DNS Maestro/Esclavo
+Fecha: 2026-03-03 15:02:56
+
+=== MASTER /etc/bind/named.conf.options ===
+options {
+    directory "/var/cache/bind";
+
+    recursion no;
+    allow-recursion { none; };
+    allow-query { any; };
+    allow-transfer { none; };
+
+    dnssec-validation auto;
+    listen-on-v6 { any; };
+};
+
+=== MASTER /etc/bind/named.conf.local ===
+key "axfr-key" {
+    algorithm hmac-sha256;
+    secret "/A39HXgLEpVmfTRAlsn+FhjExOzpZjbj/r/eanLR9PU=";
+};
+
+zone "empresa.local" {
+    type master;
+    file "/etc/bind/db.empresa.local";
+    notify yes;
+    allow-transfer { key "axfr-key"; };
+};
+
+zone "50.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.192.168.50";
+    notify yes;
+    allow-transfer { key "axfr-key"; };
+};
+
+=== MASTER db.empresa.local ===
+$TTL 86400
+@   IN  SOA maestro.empresa.local. admin.empresa.local. (
+        2026030302 ; Serial
+        3600       ; Refresh
+        1800       ; Retry
+        604800     ; Expire
+        86400 )    ; Minimum TTL
+
+@                   IN  NS      maestro.empresa.local.
+@                   IN  NS      esclavo.empresa.local.
+
+maestro             IN  A       192.168.50.3
+maestro             IN  AAAA    fd00:50::3
+esclavo             IN  A       192.168.50.2
+esclavo             IN  AAAA    fd00:50::2
+www                 IN  CNAME   maestro
+app                 IN  CNAME   esclavo
+api2                IN  A       192.168.50.10
+
+=== MASTER db.192.168.50 ===
+$TTL 86400
+@   IN  SOA maestro.empresa.local. admin.empresa.local. (
+        2026030301 ; Serial
+        3600
+        1800
+        604800
+        86400 )
+
+@       IN  NS      maestro.empresa.local.
+@       IN  NS      esclavo.empresa.local.
+
+3       IN  PTR     maestro.empresa.local.
+2       IN  PTR     esclavo.empresa.local.
+
+=== SLAVE /etc/bind/named.conf.options ===
+options {
+    directory "/var/cache/bind";
+
+    recursion no;
+    allow-recursion { none; };
+    allow-query { any; };
+    allow-transfer { none; };
+
+    dnssec-validation auto;
+    listen-on-v6 { any; };
+};
+
+=== SLAVE /etc/bind/named.conf.local ===
+key "axfr-key" {
+    algorithm hmac-sha256;
+    secret "/A39HXgLEpVmfTRAlsn+FhjExOzpZjbj/r/eanLR9PU=";
+};
+
+zone "empresa.local" {
+    type slave;
+    file "/var/cache/bind/db.empresa.local";
+    masters { 192.168.50.3 key "axfr-key"; };
+};
+
+zone "50.168.192.in-addr.arpa" {
+    type slave;
+    file "/var/cache/bind/db.192.168.50";
+    masters { 192.168.50.3 key "axfr-key"; };
+};
+
+=== PRUEBAS DIG DESDE ESCLAVO ===
+192.168.50.3
+192.168.50.2
+maestro.empresa.local.
+192.168.50.3
+fd00:50::3
+maestro.empresa.local.
+esclavo.empresa.local.
+maestro.empresa.local. admin.empresa.local. 2026030302 3600 1800 604800 86400
+192.168.50.10
+
+=== AXFR NO AUTORIZADO (debe fallar) ===
+
+; <<>> DiG 9.18.39-0ubuntu0.22.04.2-Ubuntu <<>> @192.168.50.3 empresa.local AXFR +time=2 +tries=1
+; (1 server found)
+;; global options: +cmd
+; Transfer failed.
+
+=== RECURSION DESHABILITADA ===
+
+=== LOGS DE TRANSFERENCIA/NOTIFY EN ESCLAVO ===
+Mar 03 19:57:09 cliente named[2599]: zone empresa.local/IN: Transfer started.
+Mar 03 19:57:09 cliente named[2599]: transfer of 'empresa.local/IN' from 192.168.50.3#53: connected using 192.168.50.3#53 TSIG axfr-key
+Mar 03 19:57:09 cliente named[2599]: zone empresa.local/IN: transferred serial 2026030301: TSIG 'axfr-key'
+Mar 03 19:57:09 cliente named[2599]: transfer of 'empresa.local/IN' from 192.168.50.3#53: Transfer status: success
+Mar 03 19:57:09 cliente named[2599]: transfer of 'empresa.local/IN' from 192.168.50.3#53: Transfer completed: 1 messages, 10 records, 358 bytes, 0.001 secs (358000 bytes/sec) (serial 2026030301)
+Mar 03 19:57:09 cliente named[2599]: zone empresa.local/IN: sending notifies (serial 2026030301)
+Mar 03 19:57:10 cliente named[2599]: zone 50.168.192.in-addr.arpa/IN: Transfer started.
+Mar 03 19:57:10 cliente named[2599]: transfer of '50.168.192.in-addr.arpa/IN' from 192.168.50.3#53: connected using 192.168.50.3#53 TSIG axfr-key
+Mar 03 19:57:10 cliente named[2599]: zone 50.168.192.in-addr.arpa/IN: transferred serial 2026030301: TSIG 'axfr-key'
+Mar 03 19:57:10 cliente named[2599]: transfer of '50.168.192.in-addr.arpa/IN' from 192.168.50.3#53: Transfer status: success
+Mar 03 19:57:10 cliente named[2599]: transfer of '50.168.192.in-addr.arpa/IN' from 192.168.50.3#53: Transfer completed: 1 messages, 6 records, 289 bytes, 0.001 secs (289000 bytes/sec) (serial 2026030301)
+Mar 03 19:57:10 cliente named[2599]: zone 50.168.192.in-addr.arpa/IN: sending notifies (serial 2026030301)
+Mar 03 19:58:23 cliente named[2599]: client @0x7f2b00010488 192.168.50.3#43882: received notify for zone 'empresa.local'
+Mar 03 19:58:23 cliente named[2599]: zone empresa.local/IN: notify from 192.168.50.3#43882: serial 2026030302
+Mar 03 19:58:23 cliente named[2599]: zone empresa.local/IN: Transfer started.
+Mar 03 19:58:23 cliente named[2599]: transfer of 'empresa.local/IN' from 192.168.50.3#53: connected using 192.168.50.3#53 TSIG axfr-key
+Mar 03 19:58:23 cliente named[2599]: zone empresa.local/IN: transferred serial 2026030302: TSIG 'axfr-key'
+Mar 03 19:58:23 cliente named[2599]: transfer of 'empresa.local/IN' from 192.168.50.3#53: Transfer status: success
+Mar 03 19:58:23 cliente named[2599]: transfer of 'empresa.local/IN' from 192.168.50.3#53: Transfer completed: 1 messages, 11 records, 379 bytes, 0.001 secs (379000 bytes/sec) (serial 2026030302)
+Mar 03 19:58:23 cliente named[2599]: zone empresa.local/IN: sending notifies (serial 2026030302)
+Mar 03 19:58:23 cliente named[2599]: client @0x7f2b00010488 192.168.50.3#39920: received notify for zone 'empresa.local'
+Mar 03 19:58:23 cliente named[2599]: zone empresa.local/IN: notify from 192.168.50.3#39920: zone is up to date
+Mar 03 20:00:46 cliente named[2599]: client @0x7f2b00010488 192.168.50.3#45626: received notify for zone '50.168.192.in-addr.arpa'
+Mar 03 20:00:46 cliente named[2599]: zone 50.168.192.in-addr.arpa/IN: notify from 192.168.50.3#45626: zone is up to date
+Mar 03 20:00:47 cliente named[2599]: client @0x7f2afd2bba08 192.168.50.3#59875: received notify for zone 'empresa.local'
+Mar 03 20:00:47 cliente named[2599]: zone empresa.local/IN: notify from 192.168.50.3#59875: zone is up to date
+Mar 03 20:01:58 cliente named[2599]: client @0x7f2b00010488 192.168.50.3#57819: received notify for zone 'empresa.local'
+Mar 03 20:01:58 cliente named[2599]: zone empresa.local/IN: notify from 192.168.50.3#57819: zone is up to date
+Mar 03 20:01:59 cliente named[2599]: client @0x7f2afd2bba08 192.168.50.3#45460: received notify for zone '50.168.192.in-addr.arpa'
+Mar 03 20:01:59 cliente named[2599]: zone 50.168.192.in-addr.arpa/IN: notify from 192.168.50.3#45460: zone is up to date
+Mar 03 20:02:15 cliente named[3384]: zone 50.168.192.in-addr.arpa/IN: loaded serial 2026030301
+Mar 03 20:02:15 cliente named[3384]: zone empresa.local/IN: loaded serial 2026030302
+Mar 03 20:02:15 cliente named[3384]: zone empresa.local/IN: sending notifies (serial 2026030302)
+Mar 03 20:02:15 cliente named[3384]: zone 50.168.192.in-addr.arpa/IN: sending notifies (serial 2026030301)
+Mar 03 20:02:25 cliente named[3384]: client @0x7f53452b6f18 192.168.50.3#38662: received notify for zone 'empresa.local'
+Mar 03 20:02:25 cliente named[3384]: zone empresa.local/IN: notify from 192.168.50.3#38662: zone is up to date
+Mar 03 20:02:25 cliente named[3384]: client @0x7f534c009928 192.168.50.3#36178: received notify for zone '50.168.192.in-addr.arpa'
+Mar 03 20:02:25 cliente named[3384]: zone 50.168.192.in-addr.arpa/IN: notify from 192.168.50.3#36178: zone is up to date
+Mar 03 20:02:26 cliente named[3384]: client @0x7f53452b6f18 192.168.50.3#36523: received notify for zone 'empresa.local'
+Mar 03 20:02:26 cliente named[3384]: zone empresa.local/IN: notify from 192.168.50.3#36523: zone is up to date
+
+
+=== PRUEBA DE FALLA DEL MAESTRO ===
+Apagando maestro...
+==> servidor: Forcing shutdown of VM...
+Consultas al esclavo con maestro apagado:
+192.168.50.3
+192.168.50.10
+maestro.empresa.local.
+Encendiendo maestro nuevamente...
+Bringing machine 'servidor' up with 'virtualbox' provider...
+==> servidor: Checking if box 'bento/ubuntu-22.04' version '202510.26.0' is up to date...
+==> servidor: Clearing any previously set forwarded ports...
+==> servidor: Clearing any previously set network interfaces...
+==> servidor: Preparing network interfaces based on configuration...
+    servidor: Adapter 1: nat
+    servidor: Adapter 2: hostonly
+==> servidor: Forwarding ports...
+    servidor: 22 (guest) => 2222 (host) (adapter 1)
+==> servidor: Booting VM...
+==> servidor: Waiting for machine to boot. This may take a few minutes...
+    servidor: SSH address: 127.0.0.1:2222
+    servidor: SSH username: vagrant
+    servidor: SSH auth method: private key
+    servidor: Warning: Connection reset. Retrying...
+    servidor: Warning: Connection aborted. Retrying...
+==> servidor: Machine booted and ready!
+==> servidor: Checking for guest additions in VM...
+==> servidor: Setting hostname...
+==> servidor: Configuring and enabling network interfaces...
+==> servidor: Mounting shared folders...
+    servidor: C:/Users/USUARIO/Desktop/UAO 2026 SEMESTRE 1/Servicios telematicos/prueba => /vagrant
+==> servidor: Machine not provisioned because `--no-provision` is specified.
+Estado final de VMs:
+Current machine states:
+
+servidor                  running (virtualbox)
+cliente                   running (virtualbox)
+
+This environment represents multiple VMs. The VMs are all listed
+above with their current state. For more information about a specific
+VM, run `vagrant status NAME`.
+
+=== AXFR NO AUTORIZADO CONTRA ESCLAVO (debe fallar) ===
+
+; <<>> DiG 9.18.39-0ubuntu0.22.04.2-Ubuntu <<>> @192.168.50.2 empresa.local AXFR +time=2 +tries=1
+; (1 server found)
+;; global options: +cmd
+; Transfer failed.

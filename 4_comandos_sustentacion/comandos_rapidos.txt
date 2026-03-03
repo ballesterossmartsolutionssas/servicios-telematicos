@@ -1,0 +1,16 @@
+﻿COMANDOS RAPIDOS DE SUSTENTACION
+
+1) Estado de VMs
+vagrant status
+
+2) Punto 1 DNS
+vagrant ssh cliente -c "dig @192.168.50.2 maestro.empresa.local +short"
+vagrant ssh cliente -c "dig @192.168.50.2 -x 192.168.50.3 +short"
+
+3) Punto 2 Compresion (dominio con nombre)
+vagrant ssh cliente -c "curl --resolve parcial.juan-camilo.com:80:192.168.50.3 -H 'Accept-Encoding: gzip' -I http://parcial.juan-camilo.com/lorem.txt"
+vagrant ssh cliente -c "curl --resolve parcial.juan-camilo.com:80:192.168.50.3 -H 'Accept-Encoding: gzip' -I http://parcial.juan-camilo.com/logo.png"
+
+4) Punto 3 Ngrok
+vagrant ssh servidor -c "bash /tmp/start_point3_ngrok_tunnel.sh"
+vagrant ssh servidor -c "bash /tmp/verify_point3.sh"
