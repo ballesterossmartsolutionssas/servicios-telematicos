@@ -193,6 +193,35 @@ Reactivar maestro:
 vagrant up servidor --no-provision
 ```
 
+## 8.1) Si el profesor pide "apague el esclavo y siga resolviendo"
+
+Idea clave:
+- Si se cae el esclavo, se puede seguir resolviendo por el maestro (cliente con DNS alterno o consulta directa al maestro).
+
+Demo rapido:
+
+1. En `host` apagar esclavo:
+```bash
+vagrant halt cliente -f
+```
+
+2. En `servidor` consultar contra maestro:
+```bash
+dig @192.168.50.3 maestro.empresa.local +short
+dig @192.168.50.3 -x 192.168.50.2 +short
+dig @192.168.50.3 parcial.juan-camilo.com +short
+```
+
+3. Mostrar estado:
+```bash
+vagrant status
+```
+
+4. Reencender esclavo:
+```bash
+vagrant up cliente --no-provision
+```
+
 ## 9) Preguntas conceptuales (respuesta corta)
 
 1. Por que `recursion no` en autoritativos?
@@ -216,4 +245,3 @@ vagrant up servidor --no-provision
 2. `parcial_1/GUIA_SUSTENTACION_PARCIAL1.pdf`
 3. `parcial_1/3_punto_ngrok/url_publica.txt`
 4. Repo: `https://github.com/ballesterossmartsolutionssas/servicios-telematicos`
-
