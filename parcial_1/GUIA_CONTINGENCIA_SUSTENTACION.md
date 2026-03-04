@@ -200,27 +200,36 @@ Idea clave:
 
 Demo rapido:
 
-1. En `host` apagar esclavo:
+1. Mostrar que maestro responde (en `servidor`):
+```bash
+dig @127.0.0.1 maestro.empresa.local +short
+dig @127.0.0.1 parcial.juan-camilo.com +short
+```
+
+2. En `host` apagar esclavo:
 ```bash
 vagrant halt cliente -f
 ```
 
-2. En `servidor` consultar contra maestro:
+3. En `servidor` consultar contra maestro:
 ```bash
 dig @192.168.50.3 maestro.empresa.local +short
 dig @192.168.50.3 -x 192.168.50.2 +short
 dig @192.168.50.3 parcial.juan-camilo.com +short
 ```
 
-3. Mostrar estado:
+4. (Opcional) mostrar que esclavo esta caido:
 ```bash
 vagrant status
 ```
 
-4. Reencender esclavo:
+5. Volver a encender esclavo:
 ```bash
 vagrant up cliente --no-provision
 ```
+
+Frase clave para decir al profesor:
+- La alta disponibilidad DNS se logra configurando cliente con ambos nameservers (esclavo y maestro); si cae uno, el resolver usa el otro.
 
 ## 9) Preguntas conceptuales (respuesta corta)
 
