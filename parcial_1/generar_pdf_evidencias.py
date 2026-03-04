@@ -97,8 +97,8 @@ def main():
         rightMargin=1.6 * cm,
         topMargin=1.6 * cm,
         bottomMargin=1.4 * cm,
-        title="Evidencias Parcial 1 - Juan Camilo",
-        author="Juan Camilo",
+        title="Evidencias Parcial 1 - Juan Camilo Ballesteros Sierra",
+        author="Juan Camilo Ballesteros Sierra",
     )
 
     styles = getSampleStyleSheet()
@@ -127,7 +127,9 @@ def main():
 
     story = []
     story.append(Paragraph("EVIDENCIAS PARCIAL 1 - SERVICIOS TELEMATICOS", title_style))
-    story.append(Paragraph("Estudiante: Juan Camilo", normal))
+    story.append(Paragraph("Estudiante: Juan Camilo Ballesteros Sierra", normal))
+    story.append(Paragraph("Codigo: 2230721", normal))
+    story.append(Paragraph("Profesor: Oscar Hernan Mondragon Martinez", normal))
     story.append(Paragraph("Dominio configurado: parcial.juan-camilo.com", normal))
     story.append(Paragraph(f"Fecha de generacion: {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", normal))
     story.append(Spacer(1, 0.25 * cm))
