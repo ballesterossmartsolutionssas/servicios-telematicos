@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import textwrap
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
@@ -61,10 +62,40 @@ def main() -> None:
     in_code = False
     code_lines: list[str] = []
 
+    def wrap_code_block(lines: list[str], width: int = 72) -> str:
+        wrapped_lines: list[str] = []
+        for line in lines:
+            if not line:
+                wrapped_lines.append("")
+                continue
+
+            indent_len = len(line) - len(line.lstrip(" "))
+            indent = " " * indent_len
+            content = line[indent_len:]
+
+            chunks = textwrap.wrap(
+                content,
+                width=max(20, width - indent_len),
+                break_long_words=False,
+                break_on_hyphens=False,
+                replace_whitespace=False,
+                drop_whitespace=False,
+            )
+
+            if not chunks:
+                wrapped_lines.append(indent)
+            else:
+                for i, chunk in enumerate(chunks):
+                    if i == 0:
+                        wrapped_lines.append(f"{indent}{chunk}")
+                    else:
+                        wrapped_lines.append(f"{indent}  {chunk}")
+        return "\n".join(wrapped_lines)
+
     def flush_code() -> None:
         nonlocal code_lines
         if code_lines:
-            story.append(Preformatted("\n".join(code_lines), code))
+            story.append(Preformatted(wrap_code_block(code_lines), code))
             story.append(Spacer(1, 0.12 * cm))
             code_lines = []
 
@@ -96,7 +127,7 @@ def main() -> None:
         # markdown-ish list handling
         line = line.replace("`", "")
         if line.startswith("- "):
-            line = f"• {line[2:]}"
+            line = f"* {line[2:]}"
         if line[:2].isdigit() and line[2:4] == ") ":
             line = line
 
@@ -109,4 +140,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
