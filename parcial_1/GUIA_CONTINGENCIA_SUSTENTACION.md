@@ -175,30 +175,7 @@ tail -n 60 /tmp/ngrok_http80.log
 curl -s http://127.0.0.1:4040/api/tunnels | jq .
 ```
 
-## 8) Failover DNS (demo instantanea)
-
-En `CMD 1`:
-```bash
-vagrant halt servidor -f
-```
-
-En `cliente`:
-```bash
-dig @192.168.50.2 maestro.empresa.local +short
-dig @192.168.50.2 -x 192.168.50.3 +short
-```
-
-Reactivar maestro:
-```bash
-vagrant up servidor --no-provision
-```
-
-## 8.1) Si el profesor pide "apague el esclavo y siga resolviendo"
-
-Idea clave:
-- Si se cae el esclavo, se puede seguir resolviendo por el maestro (cliente con DNS alterno o consulta directa al maestro).
-
-Demo rapido:
+## 8) Fallo del maestro (escenario clave del parcial)
 
 1. Mostrar que maestro responde (en `servidor`):
 ```bash
@@ -206,30 +183,48 @@ dig @127.0.0.1 maestro.empresa.local +short
 dig @127.0.0.1 parcial.juan-camilo.com +short
 ```
 
-2. En `host` apagar esclavo:
+2. Apagar maestro (en `CMD host`):
 ```bash
-vagrant halt cliente -f
+vagrant halt servidor -f
 ```
 
-3. En `servidor` consultar contra maestro:
+3. Consultas siguen funcionando por esclavo (en `cliente`):
 ```bash
-dig @192.168.50.3 maestro.empresa.local +short
-dig @192.168.50.3 -x 192.168.50.2 +short
-dig @192.168.50.3 parcial.juan-camilo.com +short
+dig @192.168.50.2 maestro.empresa.local +short
+dig @192.168.50.2 -x 192.168.50.3 +short
+dig @192.168.50.2 parcial.juan-camilo.com +short
 ```
 
-4. (Opcional) mostrar que esclavo esta caido:
+4. (Opcional) mostrar que maestro esta caido (en host):
 ```bash
 vagrant status
 ```
 
-5. Volver a encender esclavo:
+5. Volver a encender maestro:
 ```bash
-vagrant up cliente --no-provision
+vagrant up servidor --no-provision
 ```
 
 Frase clave para decir al profesor:
-- La alta disponibilidad DNS se logra configurando cliente con ambos nameservers (esclavo y maestro); si cae uno, el resolver usa el otro.
+- La alta disponibilidad se evidencia porque, al caer el maestro, el esclavo mantiene la zona transferida y continua resolviendo.
+
+## 8.1) Opcional: si pide el caso inverso (cae esclavo)
+
+En host:
+```bash
+vagrant halt cliente -f
+```
+
+Consultar por maestro:
+```bash
+dig @192.168.50.3 maestro.empresa.local +short
+dig @192.168.50.3 parcial.juan-camilo.com +short
+```
+
+Reencender esclavo:
+```bash
+vagrant up cliente --no-provision
+```
 
 ## 9) Preguntas conceptuales (respuesta corta)
 
