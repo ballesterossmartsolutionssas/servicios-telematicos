@@ -1,0 +1,51 @@
+﻿== resolved.conf ==
+[Resolve]
+DNS=1.1.1.1#cloudflare-dns.com 8.8.8.8#dns.google
+FallbackDNS=1.0.0.1#cloudflare-dns.com 8.8.4.4#dns.google
+DNSOverTLS=yes
+Domains=~.
+---
+Global
+           Protocols: -LLMNR -mDNS +DNSOverTLS DNSSEC=no/unsupported
+    resolv.conf mode: stub
+  Current DNS Server: 1.1.1.1#cloudflare-dns.com
+         DNS Servers: 1.1.1.1#cloudflare-dns.com 8.8.8.8#dns.google
+Fallback DNS Servers: 1.0.0.1#cloudflare-dns.com 8.8.4.4#dns.google
+          DNS Domain: ~.
+
+Link 2 (eth0)
+    Current Scopes: DNS
+         Protocols: +DefaultRoute +LLMNR -mDNS +DNSOverTLS DNSSEC=no/unsupported
+Current DNS Server: 1.1.1.1#cloudflare-dns.com
+       DNS Servers: 1.1.1.1#cloudflare-dns.com 8.8.8.8#dns.google 200.21.200.10
+                    200.21.200.80 192.168.50.3
+        DNS Domain: ~.
+
+Link 3 (eth1)
+Current Scopes: none
+     Protocols: -DefaultRoute +LLMNR -mDNS +DNSOverTLS DNSSEC=no/unsupported
+
+== consultas DNS ==
+openai.com: [0;1;39m104.18.33.45[0m                       [0;38;5;245m-- link: eth0[0m
+            [0;1;39m172.64.154.211[0m                     [0;38;5;245m-- link: eth0[0m
+
+[0;38;5;245m-- Information acquired via protocol DNS in 59.9ms.[0m
+[0;38;5;245m-- Data is authenticated: no; Data was acquired via local or encrypted transport: yes[0m
+[0;38;5;245m-- Data from: network[0m
+---
+uao.edu.co: [0;1;39m2606:4700:20::681a:80e[0m             [0;38;5;245m-- link: eth0[0m
+            [0;1;39m2606:4700:20::ac43:49e7[0m            [0;38;5;245m-- link: eth0[0m
+            [0;1;39m2606:4700:20::681a:90e[0m             [0;38;5;245m-- link: eth0[0m
+            [0;1;39m104.26.9.14[0m                        [0;38;5;245m-- link: eth0[0m
+            [0;1;39m104.26.8.14[0m                        [0;38;5;245m-- link: eth0[0m
+            [0;1;39m172.67.73.231[0m                      [0;38;5;245m-- link: eth0[0m
+
+[0;38;5;245m-- Information acquired via protocol DNS in 39.9ms.[0m
+[0;38;5;245m-- Data is authenticated: no; Data was acquired via local or encrypted transport: yes[0m
+[0;38;5;245m-- Data from: network[0m
+---
+github.com: [0;1;39m140.82.113.4[0m                       [0;38;5;245m-- link: eth0[0m
+
+[0;38;5;245m-- Information acquired via protocol DNS in 19.9ms.[0m
+[0;38;5;245m-- Data is authenticated: no; Data was acquired via local or encrypted transport: yes[0m
+[0;38;5;245m-- Data from: network[0m

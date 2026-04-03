@@ -1,0 +1,199 @@
+﻿
+0% [Working]
+            
+Hit:1 http://us.archive.ubuntu.com/ubuntu jammy InRelease
+
+0% [Connecting to security.ubuntu.com (91.189.92.23)]
+                                                     
+Hit:2 http://us.archive.ubuntu.com/ubuntu jammy-updates InRelease
+
+                                                     
+0% [Waiting for headers] [Waiting for headers]
+0% [Waiting for headers] [Waiting for headers]
+                                              
+Hit:3 http://us.archive.ubuntu.com/ubuntu jammy-backports InRelease
+
+                                              
+0% [Waiting for headers]
+0% [Waiting for headers]
+                        
+Hit:4 http://security.ubuntu.com/ubuntu jammy-security InRelease
+
+                        
+0% [Working]
+0% [Working]
+20% [Working]
+             
+
+Reading package lists... 0%
+
+Reading package lists... 0%
+
+Reading package lists... 0%
+
+Reading package lists... 2%
+
+Reading package lists... 2%
+
+Reading package lists... 3%
+
+Reading package lists... 3%
+
+Reading package lists... 3%
+
+Reading package lists... 3%
+
+Reading package lists... 3%
+
+Reading package lists... 3%
+
+Reading package lists... 25%
+
+Reading package lists... 25%
+
+Reading package lists... 35%
+
+Reading package lists... 35%
+
+Reading package lists... 35%
+
+Reading package lists... 35%
+
+Reading package lists... 35%
+
+Reading package lists... 35%
+
+Reading package lists... 42%
+
+Reading package lists... 42%
+
+Reading package lists... 46%
+
+Reading package lists... 46%
+
+Reading package lists... 58%
+
+Reading package lists... 58%
+
+Reading package lists... 65%
+
+Reading package lists... 65%
+
+Reading package lists... 67%
+
+Reading package lists... 67%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 69%
+
+Reading package lists... 69%
+
+Reading package lists... 74%
+
+Reading package lists... 74%
+
+Reading package lists... 79%
+
+Reading package lists... 79%
+
+Reading package lists... 81%
+
+Reading package lists... 89%
+
+Reading package lists... 89%
+
+Reading package lists... 96%
+
+Reading package lists... 96%
+
+Reading package lists... 98%
+
+Reading package lists... 98%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... Done
+
+
+Reading package lists... 0%
+
+Reading package lists... 100%
+
+Reading package lists... Done
+
+
+Building dependency tree... 0%
+
+Building dependency tree... 0%
+
+Building dependency tree... 50%
+
+Building dependency tree... 50%
+
+Building dependency tree... Done
+
+
+Reading state information... 0% 
+
+Reading state information... 0%
+
+Reading state information... Done
+
+sshpass is already the newest version (1.09-1).
+tshark is already the newest version (3.6.2-2).
+openssh-client is already the newest version (1:8.9p1-3ubuntu0.14).
+0 upgraded, 0 newly installed, 0 to remove and 111 not upgraded.
+== Sesion SFTP batch ==
+Connected to 192.168.50.3.
+sftp> ls
+upload  
+sftp> put /tmp/sftp_demo_payload.txt upload/sftp_demo_payload.txt
+Uploading /tmp/sftp_demo_payload.txt to /srv/ftps/telematico/upload/sftp_demo_payload.txt
+sftp> get upload/sftp_demo_payload.txt /tmp/sftp_demo_payload.downloaded.txt
+Fetching /srv/ftps/telematico/upload/sftp_demo_payload.txt to /tmp/sftp_demo_payload.downloaded.txt
+sftp> ls upload
+upload/ftps_demo_payload.txt            upload/ftps_demo_payload_2.txt          
+upload/sftp_demo_payload.txt            
+sftp> bye
+
+== Integridad del archivo transferido ==
+09946ec5806abbedf49874d24cab90fc06dd55b59ef351c7ed6e89f6c9b86bbb  /tmp/sftp_demo_payload.txt
+09946ec5806abbedf49874d24cab90fc06dd55b59ef351c7ed6e89f6c9b86bbb  /tmp/sftp_demo_payload.downloaded.txt
+
+== Captura SSH/SFTP en puerto 22 ==
+Connected to 192.168.50.3.
+-rw------- 1 root root 376 Apr  3 16:04 /tmp/sftp_22_capture.pcapng
+OK: el contenido del archivo no aparece en texto plano dentro del pcap.

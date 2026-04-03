@@ -1,0 +1,202 @@
+﻿
+0% [Working]
+            
+Hit:1 http://us.archive.ubuntu.com/ubuntu jammy InRelease
+
+0% [Waiting for headers]
+                        
+Hit:2 http://security.ubuntu.com/ubuntu jammy-security InRelease
+
+0% [Waiting for headers]
+                        
+Hit:3 http://us.archive.ubuntu.com/ubuntu jammy-updates InRelease
+
+0% [Waiting for headers]
+0% [Waiting for headers]
+                        
+Hit:4 http://us.archive.ubuntu.com/ubuntu jammy-backports InRelease
+
+                        
+0% [Working]
+0% [Working]
+0% [Working]
+20% [Working]
+             
+
+Reading package lists... 0%
+
+Reading package lists... 0%
+
+Reading package lists... 0%
+
+Reading package lists... 2%
+
+Reading package lists... 2%
+
+Reading package lists... 3%
+
+Reading package lists... 3%
+
+Reading package lists... 3%
+
+Reading package lists... 3%
+
+Reading package lists... 3%
+
+Reading package lists... 3%
+
+Reading package lists... 25%
+
+Reading package lists... 25%
+
+Reading package lists... 35%
+
+Reading package lists... 35%
+
+Reading package lists... 35%
+
+Reading package lists... 35%
+
+Reading package lists... 35%
+
+Reading package lists... 35%
+
+Reading package lists... 42%
+
+Reading package lists... 42%
+
+Reading package lists... 46%
+
+Reading package lists... 46%
+
+Reading package lists... 58%
+
+Reading package lists... 58%
+
+Reading package lists... 65%
+
+Reading package lists... 65%
+
+Reading package lists... 67%
+
+Reading package lists... 67%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 68%
+
+Reading package lists... 69%
+
+Reading package lists... 69%
+
+Reading package lists... 74%
+
+Reading package lists... 74%
+
+Reading package lists... 79%
+
+Reading package lists... 79%
+
+Reading package lists... 79%
+
+Reading package lists... 89%
+
+Reading package lists... 89%
+
+Reading package lists... 96%
+
+Reading package lists... 96%
+
+Reading package lists... 98%
+
+Reading package lists... 98%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... Done
+
+
+Reading package lists... 0%
+
+Reading package lists... 100%
+
+Reading package lists... Done
+
+
+Building dependency tree... 0%
+
+Building dependency tree... 0%
+
+Building dependency tree... 50%
+
+Building dependency tree... 50%
+
+Building dependency tree... Done
+
+
+Reading state information... 0% 
+
+Reading state information... 0%
+
+Reading state information... Done
+
+lftp is already the newest version (4.9.2-1build1).
+tshark is already the newest version (3.6.2-2).
+openssl is already the newest version (3.0.2-0ubuntu1.21).
+openssl set to manually installed.
+0 upgraded, 0 newly installed, 0 to remove and 111 not upgraded.
+== Verificacion OpenSSL STARTTLS FTP ==
+subject=C = CO, ST = Valle, L = Cali, O = UAO, OU = ServiciosTelematicos, CN = servidor.ftps.local
+issuer=C = CO, ST = Valle, L = Cali, O = UAO, OU = ServiciosTelematicos, CN = UAO-CA
+Verify return code: 0 (ok)
+
+== Operaciones FTPS con lftp ==
+  
+`ls' at 0 [Sending commands...]
+                                 
+drwxrwxr-x    2 1001     1001         4096 Apr 03 16:01 upload
+get: upload/ftps_demo_payload.txt: /tmp/ftps_demo_payload.downloaded.txt: file already exists and xfer:clobber is unset
+-rw-r--r--    1 1001     1001           58 Apr 03 16:03 ftps_demo_payload.txt
+-rw-r--r--    1 1001     1001           58 Apr 03 15:58 ftps_demo_payload_2.txt
+-rw-rw-r--    1 1001     1001           58 Apr 03 16:01 sftp_demo_payload.txt
+
+== Integridad del archivo transferido ==
+8e081476d13f7a9f04b2067ff149b46e72fd4dbeb29bd0e76c3da339c2ee516a  /tmp/ftps_demo_payload.txt
+1278fb5cd8df86c8e70adba45f8c64c6d5007e6e042f3b7c0f05875b150041f3  /tmp/ftps_demo_payload.downloaded.txt
+
+== Captura TLS FTPS ==
+  
+`/tmp/ftps_demo_payload.txt' at 0 (0%) [Sending commands...]
+                                                              
+-rw------- 1 root root 408 Apr  3 16:04 /tmp/ftps_tls_capture.pcapng
+OK: el contenido del archivo no aparece en texto plano dentro del pcap.

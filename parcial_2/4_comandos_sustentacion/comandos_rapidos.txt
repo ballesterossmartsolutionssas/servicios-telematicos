@@ -1,0 +1,22 @@
+COMANDOS RAPIDOS DE SUSTENTACION - PARCIAL 2
+
+1) Estado de VMs
+vagrant status
+
+2) FTPS + UFW
+vagrant ssh servidor -c "bash /vagrant/parcial1_entrega/parcial_2/1_ftps_ufw/scripts/setup_ftps_ufw.sh"
+vagrant ssh servidor -c "bash /vagrant/parcial1_entrega/parcial_2/1_ftps_ufw/scripts/toggle_port21_demo.sh close"
+vagrant ssh cliente -c "openssl s_client -connect 192.168.50.3:21 -starttls ftp -CAfile /vagrant/parcial1_entrega/parcial_2/0_certificados_base/ca.crt < /dev/null"
+vagrant ssh servidor -c "bash /vagrant/parcial1_entrega/parcial_2/1_ftps_ufw/scripts/toggle_port21_demo.sh open"
+vagrant ssh cliente -c "bash /vagrant/parcial1_entrega/parcial_2/1_ftps_ufw/scripts/verify_ftps_ufw.sh"
+
+3) DNS over TLS
+vagrant ssh cliente -c "bash /vagrant/parcial1_entrega/parcial_2/2_dot/scripts/setup_dot_client.sh"
+vagrant ssh cliente -c "bash /vagrant/parcial1_entrega/parcial_2/2_dot/scripts/verify_dot.sh"
+
+4) SFTP + UFW
+vagrant ssh servidor -c "bash /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/scripts/setup_sftp_server.sh"
+vagrant ssh servidor -c "bash /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/scripts/toggle_port22_demo.sh close"
+vagrant ssh cliente -c "sshpass -p 'Telemat1cos!' sftp -o PreferredAuthentications=password -o PubkeyAuthentication=no -o StrictHostKeyChecking=no telematico@192.168.50.3"
+vagrant ssh servidor -c "bash /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/scripts/toggle_port22_demo.sh open"
+vagrant ssh cliente -c "bash /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/scripts/verify_sftp_ufw.sh"
