@@ -14,6 +14,8 @@ FTPS DEMO $(date -Iseconds)
 Servidor ${SERVER_IP}
 EOF
 
+rm -f /tmp/ftps_demo_payload.downloaded.txt
+
 echo "== Verificacion OpenSSL STARTTLS FTP =="
 openssl s_client -connect "${SERVER_IP}:21" -starttls ftp -CAfile "${CA_CERT}" < /dev/null 2>/tmp/ftps_openssl.err \
     | tee /tmp/ftps_openssl.out \
