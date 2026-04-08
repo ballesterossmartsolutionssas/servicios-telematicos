@@ -1,5 +1,10 @@
 # Entrega Parcial 2 - Servicios Telematicos
 
+## Estudiante
+- Nombre: Juan Camilo Ballesteros
+- Codigo: 2231167
+- Asignatura: Servicios Telematicos
+
 Este branch contiene la entrega organizada del segundo parcial.
 
 ## Revision recomendada
