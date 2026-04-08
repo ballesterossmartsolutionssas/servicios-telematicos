@@ -1,0 +1,374 @@
+ULTIMA HORA - SUSTENTACION PARCIAL 2
+
+RUTAS IMPORTANTES
+PDF guia celular detallada:
+C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba\parcial1_entrega\parcial_2\GUIA_CELULAR_PARCIAL2_DETALLADA.pdf
+
+PDF guia completa:
+C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba\parcial1_entrega\parcial_2\GUIA_SUSTENTACION_PARCIAL2_COMPLETA.pdf
+
+Carpeta parcial 2:
+C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba\parcial1_entrega\parcial_2
+
+PCAPS BUENOS PARA MOSTRAR
+- 11_ftps_tls_ok.pcapng
+- 06_dot_853.pcapng
+- 07_dns_53.pcapng
+- 10_sftp_22_ok.pcapng
+
+PCAPS A NO USAR
+- 08_ftps_tls.pcapng
+- 09_sftp_22.pcapng
+
+==================================================
+TERMINAL 1 - HOST WINDOWS
+==================================================
+Abrir PowerShell:
+cd "C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba"
+
+Comandos:
+vagrant status
+
+Si algo se dana:
+vagrant reload servidor
+vagrant reload cliente
+
+Que decir:
+- Tengo dos VMs Ubuntu: cliente 192.168.50.2 y servidor 192.168.50.3.
+- El servidor esta protegido con UFW.
+- Voy a mostrar FTPS, DNS over TLS y SFTP.
+
+==================================================
+TERMINAL 2 - SERVIDOR
+==================================================
+Entrar:
+cd "C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba"
+vagrant ssh servidor
+
+Comandos base:
+hostnamectl
+ip -brief addr
+sudo ufw status verbose
+
+FTPS - mostrar config:
+sudo cat /etc/vsftpd.conf
+sudo ls -l /etc/ssl/telematicos
+
+FTPS - cerrar y abrir 21:
+bash /vagrant/parcial1_entrega/parcial_2/1_ftps_ufw/scripts/toggle_port21_demo.sh close
+bash /vagrant/parcial1_entrega/parcial_2/1_ftps_ufw/scripts/toggle_port21_demo.sh open
+
+SFTP - mostrar config:
+sudo cat /etc/ssh/sshd_config
+sudo systemctl --no-pager --full status ssh | sed -n '1,12p'
+
+SFTP - cerrar y abrir 22:
+bash /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/scripts/toggle_port22_demo.sh close
+bash /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/scripts/toggle_port22_demo.sh open
+
+Que decir:
+- FTPS usa 21 para control y 50000:50010 para datos pasivos.
+- SFTP usa solo 22 porque va dentro de SSH.
+
+==================================================
+TERMINAL 3 - CLIENTE
+==================================================
+Entrar:
+cd "C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba"
+vagrant ssh cliente
+
+Comandos base:
+hostnamectl
+ip -brief addr
+ping -c 2 192.168.50.3
+
+DoT - configuracion y prueba:
+sudo cat /etc/systemd/resolved.conf
+resolvectl status | sed -n '1,80p'
+resolvectl query openai.com
+resolvectl query uao.edu.co
+resolvectl query github.com
+bash /vagrant/parcial1_entrega/parcial_2/2_dot/scripts/verify_dot.sh
+
+FTPS - prueba openssl:
+openssl s_client -connect 192.168.50.3:21 -starttls ftp -CAfile /vagrant/parcial1_entrega/parcial_2/0_certificados_base/ca.crt < /dev/null
+
+FTPS - prueba completa:
+bash /vagrant/parcial1_entrega/parcial_2/1_ftps_ufw/scripts/verify_ftps_ufw.sh
+
+SFTP - prueba de conexion simple:
+sshpass -p 'Telemat1cos!' sftp -o PreferredAuthentications=password -o PubkeyAuthentication=no -o StrictHostKeyChecking=no telematico@192.168.50.3
+
+Si aparece prompt sftp>:
+ls
+bye
+
+SFTP - prueba completa:
+bash /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/scripts/verify_sftp_ufw.sh
+
+REGLA:
+NUNCA PEGAR COMANDOS BASH DENTRO DE sftp>
+
+==================================================
+ORDEN RECOMENDADO DE EXPOSICION
+==================================================
+1. Host:
+vagrant status
+
+2. Servidor:
+hostnamectl
+ip -brief addr
+sudo ufw status verbose
+
+3. Cliente:
+hostnamectl
+ip -brief addr
+ping -c 2 192.168.50.3
+
+4. Punto 1 FTPS
+Servidor:
+sudo cat /etc/vsftpd.conf
+sudo ls -l /etc/ssl/telematicos
+sudo ufw status verbose
+bash /vagrant/parcial1_entrega/parcial_2/1_ftps_ufw/scripts/toggle_port21_demo.sh close
+
+Cliente:
+openssl s_client -connect 192.168.50.3:21 -starttls ftp -CAfile /vagrant/parcial1_entrega/parcial_2/0_certificados_base/ca.crt < /dev/null
+
+Servidor:
+bash /vagrant/parcial1_entrega/parcial_2/1_ftps_ufw/scripts/toggle_port21_demo.sh open
+
+Cliente:
+bash /vagrant/parcial1_entrega/parcial_2/1_ftps_ufw/scripts/verify_ftps_ufw.sh
+
+Que decir:
+- Aqui el cliente pide AUTH TLS.
+- Luego aparece el handshake TLS.
+- Verify return code 0 valida el certificado.
+- Despues hago ls, put y get por FTPS.
+- Los hashes iguales prueban integridad.
+
+5. Punto 2 DNS over TLS
+Cliente:
+sudo cat /etc/systemd/resolved.conf
+resolvectl status | sed -n '1,80p'
+resolvectl query openai.com
+resolvectl query uao.edu.co
+resolvectl query github.com
+bash /vagrant/parcial1_entrega/parcial_2/2_dot/scripts/verify_dot.sh
+
+Que decir:
+- DNSOverTLS=yes confirma DoT.
+- En 853 el trafico va cifrado.
+- En 53 el dominio consultado si queda visible.
+
+6. Punto 3 SFTP
+Servidor:
+sudo cat /etc/ssh/sshd_config
+bash /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/scripts/toggle_port22_demo.sh close
+
+Cliente:
+sshpass -p 'Telemat1cos!' sftp -o PreferredAuthentications=password -o PubkeyAuthentication=no -o StrictHostKeyChecking=no telematico@192.168.50.3
+
+Si entra a sftp>:
+bye
+
+Servidor:
+bash /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/scripts/toggle_port22_demo.sh open
+
+Cliente:
+bash /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/scripts/verify_sftp_ufw.sh
+
+Que decir:
+- Todo SFTP viaja por 22 dentro de SSH.
+- No se ven credenciales ni contenido en texto plano.
+
+7. Punto 19 comparacion
+cat /vagrant/parcial1_entrega/parcial_2/3_sftp_ufw/TABLA_COMPARATIVA_FTPS_VS_SFTP.md
+
+Conclusion:
+- SFTP es mas adecuado para firewall estricto porque usa un solo puerto y es mas simple de administrar.
+
+==================================================
+WIRESHARK - QUE ABRIR Y QUE DECIR
+==================================================
+1. FTPS bueno
+Archivo:
+C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba\parcial1_entrega\parcial_2\5_evidencia_visual\11_ftps_tls_ok.pcapng
+
+Que senalar:
+- Response 220 (vsFTPd 3.0.5)
+- Request AUTH TLS
+- Response 234 Proceed with negotiation
+- Client Hello
+- Server Hello
+- Application Data
+
+Que decir:
+- Aqui se ve el canal de control en el puerto 21.
+- Primero aparece AUTH TLS.
+- Luego se negocia TLS.
+- Despues el trafico queda cifrado como Application Data.
+
+2. DoT bueno
+Archivo:
+C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba\parcial1_entrega\parcial_2\5_evidencia_visual\06_dot_853.pcapng
+
+Donde pararte:
+- En cualquier fila que diga TLSv1.2.
+- Mejor si en Info aparece Application Data.
+- Abajo a la izquierda muestra Dst Port: 853.
+
+Que senalar:
+1. Fila con protocolo TLSv1.2
+2. En Info donde dice Application Data
+3. Panel inferior izquierdo donde aparece Destination Port: 853
+
+Que decir:
+- Aqui estoy mostrando DNS over TLS.
+- Lo importante es que el trafico va por el puerto 853.
+- Wireshark lo interpreta como TLSv1.2 y Application Data.
+- Eso significa que la consulta DNS va cifrada.
+- A diferencia del DNS tradicional, aqui no veo el dominio consultado en texto claro.
+
+3. DNS sin cifrar
+Archivo:
+C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba\parcial1_entrega\parcial_2\5_evidencia_visual\07_dns_53.pcapng
+
+Donde pararte:
+- Primero en la fila 1.
+- Luego en la fila 2.
+- Abajo a la izquierda muestra Dst Port: 53.
+- Abajo a la derecha muestra example.net.
+
+Que senalar:
+1. Fila 1: Standard query ... A example.net
+2. Fila 2: Standard query response ... example.net ...
+3. Panel inferior izquierdo donde aparece Destination Port: 53
+4. Panel de bytes donde se ve example.net
+
+Que decir:
+- Aqui esta el DNS convencional por el puerto 53.
+- Si se ve el dominio consultado, en este caso example.net, en texto claro.
+- Eso es justamente lo que se evita con DNS over TLS.
+
+4. SFTP bueno
+Archivo:
+C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba\parcial1_entrega\parcial_2\5_evidencia_visual\10_sftp_22_ok.pcapng
+
+Filtro:
+tcp.port == 22
+
+Que senalar:
+- Protocolo SSH
+- Server: Encrypted packet
+- Client: Encrypted packet
+
+Que decir:
+- Aqui SFTP viaja dentro de SSH por el puerto 22.
+- No se ve ni la contrasena ni el contenido del archivo.
+
+==================================================
+COMO MOVERTE EN LA SUSTENTACION
+==================================================
+No empieces por Wireshark.
+
+Hazlo asi:
+1. Primero configuracion en terminal.
+2. Luego prueba en terminal.
+3. Luego evidencia visual en Wireshark.
+
+Para DoT:
+1. Terminal cliente:
+sudo cat /etc/systemd/resolved.conf
+2. Terminal cliente:
+resolvectl status | sed -n '1,80p'
+3. Terminal cliente:
+resolvectl query openai.com
+resolvectl query uao.edu.co
+resolvectl query github.com
+4. Luego Wireshark:
+06_dot_853.pcapng
+5. Luego Wireshark:
+07_dns_53.pcapng
+
+Que decir al moverte:
+- Primero muestro la configuracion.
+- Luego muestro que las consultas funcionan.
+- Ahora muestro la evidencia visual del trafico cifrado por 853.
+- Y ahora comparo con DNS normal por 53 donde si se ve el dominio.
+
+Para FTPS:
+1. Terminal servidor:
+vsftpd.conf, certificados, UFW
+2. Terminal cliente:
+openssl s_client
+3. Terminal cliente:
+verify_ftps_ufw.sh
+4. Luego Wireshark:
+11_ftps_tls_ok.pcapng
+
+Para SFTP:
+1. Terminal servidor:
+sshd_config y cierre de 22
+2. Terminal cliente:
+prueba simple de sftp
+3. Terminal servidor:
+abrir 22
+4. Terminal cliente:
+verify_sftp_ufw.sh
+5. Luego Wireshark:
+10_sftp_22_ok.pcapng
+
+==================================================
+SI EL PROFESOR PIDE FILEZILLA
+==================================================
+Abre FileZilla en Windows.
+
+Archivo -> Gestor de sitios -> Nuevo sitio
+
+Configuracion:
+- Protocolo: FTP - File Transfer Protocol
+- Host: 192.168.50.3
+- Puerto: 21
+- Cifrado: Require explicit FTP over TLS
+- Tipo de acceso: Normal
+- Usuario: telematico
+- Contrasena: Telemat1cos!
+
+Si pide modo pasivo:
+- Transfer Settings -> Passive
+
+Si aparece advertencia de certificado:
+- Mostrar que el certificado del servidor esta emitido por la CA usada en FTPS.
+- Si necesitas importar la CA en Windows:
+  certmgr.msc
+  Trusted Root Certification Authorities
+  Certificates
+  All Tasks
+  Import
+  Archivo:
+  C:\Users\USUARIO\Desktop\UAO 2026 SEMESTRE 1\Servicios telematicos\prueba\parcial1_entrega\parcial_2\0_certificados_base\ca.crt
+
+Que hacer en FileZilla:
+1. Conectar
+2. Mostrar listado remoto
+3. Entrar a upload
+4. Subir un archivo cualquiera desde Windows
+5. Descargarlo de vuelta
+
+Que decir:
+- Aqui estoy haciendo la misma prueba FTPS pero en cliente grafico.
+- El canal de control va por 21 y los datos por el rango pasivo permitido en UFW.
+
+==================================================
+SI ALGO SE TRABA
+==================================================
+Host:
+vagrant reload servidor
+vagrant reload cliente
+
+Si te enredas:
+- mira el prompt
+- si es sftp>, solo bye
+- si es vagrant@cliente:~$ o vagrant@servidor:~$, ahi si van comandos bash
